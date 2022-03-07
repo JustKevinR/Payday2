@@ -1,0 +1,13 @@
+{
+	"keybinds" : [
+		{
+			"keybind_id" : "keybind_toggleKB",
+			"name" : "Custom Armor",
+			"description" : "Armor"
+			"script_path" : "lua/CustomArmor.lua",
+			"run_in_menu" : false,
+			"run_in_game" : true,
+			"localized" : false,
+		}
+]
+}
