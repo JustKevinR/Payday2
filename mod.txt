@@ -1,0 +1,23 @@
+{
+	"name" : "Mod menu",
+	"keybinds" : [
+		{
+			"keybind_id" : "in_game_menu",
+			"name" : "In-Game menu",
+			"description" : "Select the key that you will press to open the in-game menu."
+			"script_path" : "lua/In-Game.lua",
+			"run_in_menu" : true,
+			"run_in_game" : true,
+			"localized" : false
+		},
+		{
+			"keybind_id" : "main_menu",
+			"name" : "Main menu",
+			"description" : "Select the key that you will press to open the main menu."
+			"script_path" : "lua/Main-Menu.lua",
+			"run_in_menu" : true,
+			"run_in_game" : false,
+			"localized" : false
+		}
+	]
+}
