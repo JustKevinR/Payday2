@@ -164,7 +164,7 @@ end
 
 function Giveitems( times, type )
 	for i=1, times do
-		for mat_id,_ in pairs(tweak_data.blackmarket[type]) do	
+		for mat_id,_ in pairs(tweak_data.blackmarket[type]) do
 			if _.infamous then
 				managers.blackmarket:add_to_inventory("infamous", type, mat_id, false)
 			elseif _.dlc then
@@ -184,7 +184,7 @@ local function Unlock_slots()
     local unlocked_primaries = unlocked_weapon_slots.primaries
     local unlocked_secondaries = unlocked_weapon_slots.secondaries
     for i = 1, 500 do
-        unlocked_mask_slots[i] = true 
+        unlocked_mask_slots[i] = true
         unlocked_primaries[i] = true
         unlocked_secondaries[i] = true
     end
@@ -199,15 +199,15 @@ end
 local function Maxout_safehous()
     for room_id, data in pairs(G_safehouse.rooms) do
 		local max_tier = data.tier_max
-		
+
 		local current_tier = M_safehouse:get_room_current_tier(room_id)
 		while max_tier > current_tier do
 			current_tier = current_tier + 1
-			
+
 			local unlocked_tiers = M_safehouse._global.rooms[room_id].unlocked_tiers
 			tab_insert(unlocked_tiers, current_tier)
 		end
-		
+
 		M_safehouse:set_room_tier(room_id, max_tier)
 	end
 end
@@ -245,6 +245,13 @@ local function Complete_safehouse_challenge()
 		self:complete_daily(id)
 	end
 end
+
+--Negative job function
+local function Reset_negative_job_heat()
+    for id, val in pairs(managers.job._global.heat) do
+        if managers.job._global.heat[id] < 0 then managers.job._global.heat[id] = 0 end
+    end
+end
 ---------------------------------------------------------------------------------------------------------------------------------
 --MENU OPTIONS
 
@@ -257,6 +264,8 @@ mymenu_main_options = {
     { text = "Inventory Menu", callback = Inventory_menu },
     { text = "Continental coin Menu", callback = Continental_menu },
     { text = "Safehouse Menu", callback = Safehouse_menu, button_data = callback },
+    { text = "", is_cancel_button = true},
+    { text = "Reset negative job heat", callback = Reset_negative_job_heat },
     { text = "", is_cancel_button = true},
     { text = "Unlock all achievements", callback = Unlock_achievements},
     { text = "Lock all achievements", callback = Lock_achievements},

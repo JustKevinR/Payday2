@@ -63,13 +63,13 @@ end
 		if not BaseNetworkHandler then return false end
 		return BaseNetworkHandler._gamestate_filter.any_ingame_playing[ game_state_machine:last_queued_state_name() ]
 	end
-	
+
 
 function inGame()
 		if not game_state_machine then return false end
 		return string.find(game_state_machine:current_state_name(), "game")
 	end
-	
+
 local isMultiplayer = isMultiplayer or function()
         if managers.network == nil then
             return false
@@ -180,7 +180,7 @@ local function add_cookingCombo()
 end
 
 --dodge functions
-local function dodge(value)   
+local function dodge(value)
     T_data.player.damage.DODGE_INIT = (value)
     display_hint("dodge increased")
 end
@@ -191,20 +191,20 @@ local function Kill_all_ai()
         local col_ray = { }
         col_ray.ray = Vector3(1, 0, 0)
         col_ray.position = pawn.unit:position()
-    
+
         local action_data = {}
         action_data.variant = "explosion"
         action_data.damage = 10
         action_data.attacker_unit = managers.player:player_unit()
         action_data.col_ray = col_ray
-    
+
         pawn.unit:character_damage():damage_explosion(action_data)
     end
-    
+
     for u_key,u_data in pairs(managers.enemy:all_civilians()) do
         nukeunit(u_data)
     end
-    
+
     for u_key,u_data in pairs(managers.enemy:all_enemies()) do
         u_data.char_tweak.has_alarm_pager = nil
         nukeunit(u_data)
@@ -259,21 +259,21 @@ local function No_alarms()
             return _actionRequest(self, action_desc)
         end
         function CopMovement:on_suppressed( state ) end
-        function CopLogicBase._get_logic_state_from_reaction( data, reaction ) return "idle" end 
-        function CopLogicIdle.on_alert( data, alert_data ) end 
-        function GroupAIStateBase:on_police_called( called_reason ) end 
-        function GroupAIStateBase:on_police_weapons_hot( called_reason ) end 
-        function GroupAIStateBase:on_gangster_weapons_hot( called_reason ) end 
-        function GroupAIStateBase:on_enemy_weapons_hot( is_delayed_callback ) end 
+        function CopLogicBase._get_logic_state_from_reaction( data, reaction ) return "idle" end
+        function CopLogicIdle.on_alert( data, alert_data ) end
+        function GroupAIStateBase:on_police_called( called_reason ) end
+        function GroupAIStateBase:on_police_weapons_hot( called_reason ) end
+        function GroupAIStateBase:on_gangster_weapons_hot( called_reason ) end
+        function GroupAIStateBase:on_enemy_weapons_hot( is_delayed_callback ) end
         function GroupAIStateBase:add_alert_listener( id, clbk, filter_num, types, m_pos ) end
-        function GroupAIStateBase:criminal_spotted( unit ) end 
-        function GroupAIStateBase:report_aggression( unit ) end 
+        function GroupAIStateBase:criminal_spotted( unit ) end
+        function GroupAIStateBase:report_aggression( unit ) end
         function GroupAIStateBase:propagate_alert( alert_data ) end
         function GroupAIStateBase:on_criminal_suspicion_progress( u_suspect, u_observer, status ) end
-        function PlayerMovement:on_suspicion( observer_unit, status ) end 
-        function SecurityCamera:_upd_suspicion( t ) end 
-        function SecurityCamera:_sound_the_alarm( detected_unit ) end 
-        function SecurityCamera:_set_suspicion_sound( suspicion_level ) end 
+        function PlayerMovement:on_suspicion( observer_unit, status ) end
+        function SecurityCamera:_upd_suspicion( t ) end
+        function SecurityCamera:_sound_the_alarm( detected_unit ) end
+        function SecurityCamera:_set_suspicion_sound( suspicion_level ) end
         display_hint('Alarms disabled')
 end
 
@@ -424,7 +424,7 @@ local function Instant_interaction()
     if not _getTimer then _getTimer = BaseInteractionExt._get_timer end
         function BaseInteractionExt:_get_timer()
             if self.tweak_data == "corpse_alarm_pager" and not isMultiplayer() then
-                return 0.1 
+                return 0.1
             end
             if self.tweak_data == "corpse_alarm_pager" and isMultiplayer() then
                 return _getTimer(self)
@@ -545,7 +545,7 @@ local function Sentry_inf_ammo_recoil()
         mvector3.spread( direction, tweak_data.weapon[ self._name_id ].SPREAD * self._spread_mul )
         World:effect_manager():spawn( self._muzzle_effect_table[ self._interleaving_fire ] ) -- , normal = col_ray.normal } )
         if self._use_shell_ejection_effect then
-            World:effect_manager():spawn( self._shell_ejection_effect_table ) 
+            World:effect_manager():spawn( self._shell_ejection_effect_table )
         end
         local ray_res = self:_fire_raycast( from_pos, direction, blanks )
         if self._alert_events and ray_res.rays then
@@ -581,16 +581,16 @@ local function Fast_drilling()
                         self:_set_jammed( false )
                         return
                 end
-            
+
                 if not self._powered then
                         self:_set_powered( true )
                         return
                 end
-            
+
                 if self._started then
                         return
                 end
-            
+
                 self:_start( timer )
                 if managers.network:session() then
                         managers.network:session():send_to_peers_synched( "start_timer_gui", self._unit, timer )
@@ -604,7 +604,7 @@ local function I_I_distance()
             or self.tweak_data == "shaped_sharge"
             or tostring(self._unit:name()) == "Idstring(@ID14f05c3d9ebb44b6@)"
             or self.tweak_data == "burning_money"
-            or self.tweak_data == "stn_int_place_camera" 
+            or self.tweak_data == "stn_int_place_camera"
             or self.tweak_data == "trip_mine" then
             return self._tweak_data.interact_distance or tweak_data.interaction.INTERACT_DISTANCE
         end
@@ -613,7 +613,124 @@ local function I_I_distance()
     display_hint('Increased interaction distance')
 end
 
-local function test2()
+--Interact_while_in_casing_mode
+local function Interact_while_in_casing_mode()
+    local old_is_in = old_is_in or BaseInteractionExt._is_in_required_state
+    function BaseInteractionExt:_is_in_required_state(movement_state)
+        return movement_state == "mask_off" and true or old_is_in(self, movement_state)
+    end
+    display_hint('Interact while in casing mode')
+end
+
+--Twice_as_fast_drilling
+local function Twice_as_fast_drilling()
+    local timer_multiplier = 2	-- How much faster the drilling will be: 2 = twice as fast, 0.5 = twice as long
+    local old_start = TimerGui._start
+    function TimerGui:_start(timer, current_timer)
+        old_start(self, timer / timer_multiplier, current_timer)
+    end
+    display_hint('Twice as fast drilling')
+end
+
+--Use_shaped_charges
+local function Use_shaped_charges()
+    local function do_charge_tweak(unit)
+        if unit:interaction().tweak_data == "shaped_sharge" then -- Lol nice spelling overkill
+            unit:interaction()._tweak_data.required_deployable = nil
+            unit:interaction()._tweak_data.deployable_consume = false
+        end
+    end
+
+    local o_interaction_add_unit = ObjectInteractionManager.add_unit
+    function ObjectInteractionManager:add_unit(unit)
+        o_interaction_add_unit(self, unit)
+        do_charge_tweak(unit)
+    end
+
+    for _,unit in pairs(managers.interaction._interactive_units) do do_charge_tweak(unit) end
+    display_hint('Now you use shaped charges without having them equipped')
+end
+
+--No_bag_throw_cooldown
+local function No_bag_throw_cooldown()
+    local old_check_use = PlayerStandard._check_use_item
+    function PlayerStandard:_check_use_item(t, input)
+        if input.btn_use_item_release and self._throw_time and t and t < self._throw_time then
+            managers.player:drop_carry()
+            self._throw_time = nil
+            return true
+        else return old_check_use(self, t, input) end
+    end
+    display_hint('No bag throw cooldown')
+end
+
+local function Infinite_hostage_follower_distance()
+    local old_set_objective = CopBrain.set_objective
+	function CopBrain:set_objective(new_objective, params)
+		if new_objective and new_objective.lose_track_dis then new_objective.lose_track_dis = 5000000 end
+		old_set_objective(self, new_objective, params)
+	end
+    display_hint('Infinite hostage follower distance')
+end
+--ragdoll_push_effect
+local function ragdoll_push_effect()
+    local push_scale 		= 2.0	-- Value between 0.0 - 10.0, sets the force of the push, 1.0 is normal shotgun push
+    local push_direction 	= 0.5	-- Value between 0.0 - 1.0, sets the height direction of the push, 1.0 is all the way up, 0.0 is all the way down
+
+    local dmgmul = 0
+    local old_collect = RaycastWeaponBase._collect_hits
+    function RaycastWeaponBase:_collect_hits(from, to)
+        local unique_hits, hit_enemy = old_collect(self, from, to)
+
+        if hit_enemy and unique_hits[1] then
+            local p_unit = managers.player:player_unit()
+            local dam = self:get_damage_falloff(self:_get_current_damage(dmgmul), unique_hits[1], p_unit)
+            local hit_result = self._bullet_class:on_collision(unique_hits[1], self._unit, p_unit, dam)
+            if hit_result and hit_result.type == "death" then
+                local unit = unique_hits[1].unit
+                if unit:movement()._active_actions[1] and unit:movement()._active_actions[1]:type() == "hurt" then
+                    unit:movement()._active_actions[1]:force_ragdoll() end
+
+                for i = 0, unit:num_bodies() - 1 do
+                    local u_body = unit:body(i)
+
+                    if u_body:enabled() and u_body:dynamic() then
+                        World:play_physic_effect(Idstring("physic_effects/shotgun_hit"), u_body,
+                        Vector3(unique_hits[1].ray.x, unique_hits[1].ray.y, unique_hits[1].ray.z + push_direction) * 600 * push_scale, 4 * u_body:mass(),
+                        (unique_hits[1].ray:cross(math.UP) + math.UP * 0.5) * -1000 * math.sign(mvector3.distance(unique_hits[1].hit_position, unit:position()) - 100), 2)
+                    end
+                end
+            end
+        end
+
+        return unique_hits, hit_enemy
+    end
+
+    local old_fire = RaycastWeaponBase._fire_raycast
+    function RaycastWeaponBase:_fire_raycast(user_unit, from_pos, direction, dmg_mul, shoot_player, spread_mul, autohit_mul, suppr_mul)
+        dmgmul = dmg_mul
+        return old_fire(self, user_unit, from_pos, direction, dmg_mul, shoot_player, spread_mul, autohit_mul, suppr_mul)
+    end
+    display_hint('Ragdoll push effect with any weapon')
+end
+
+--Infinite_hostage_followers
+local function Infinite_hostage_followers()
+    tweak_data.player.max_nr_following_hostages = 1000
+    display_hint('Infinite hostage followers')
+end
+
+--collect_gage
+local function collect_gage()
+    local player = managers.player:player_unit()
+    if alive(player) then
+        for _, unit in pairs(managers.interaction._interactive_units) do
+            local interaction = unit:interaction()
+            if interaction.tweak_data == "gage_assignment" then
+                interaction:interact(player)
+            end
+        end
+    end
 
 end
 ---------------------------------------------------------------------------------------------------------------------------------
@@ -628,7 +745,8 @@ mymenu_main_options = {
     { text = "Equipment Menu", callback = Equipment_menu },
     { text = "Interactions Menu", callback = Interactions_menu },
     { text = "", is_cancel_button = true },
-    { text = "Test functions", callback = test2 },
+    { text = "Interactions Menu", callback = collect_gage },
+    { text = "", is_cancel_button = true },
     { text = "", is_cancel_button = true },
     { text = "CLOSE", is_cancel_button = true, is_focused_button = true}
 }
@@ -641,6 +759,7 @@ mymenu_interactions_options = {
     { text = "Instant interaction", callback = Instant_interaction },
     { text = "Fast drilling (use before placing drill)", callback = Fast_drilling },
     { text = "Increased interaction distance", callback = I_I_distance },
+    { text = "No bag throw cooldown", callback = No_bag_throw_cooldown },
     { text = "", is_cancel_button = true },
     { text = "", is_cancel_button = true },
     { text = "Back", callback = Main_menu },
@@ -700,13 +819,15 @@ mymenu_character_options = {
     { text = "No weapon recoil", callback = No_weapon_recoil },
     { text = "One hit kill", callback = Instant_kill },
     { text = "One hit melee kill", callback = Instant_melee_kill },
-    { text = "One hit melee kill", callback = Fast_melee_charge },
+    { text = "Fast melee charge", callback = Fast_melee_charge },
     { text = "Fast reload", callback = Fast_reload },
     { text = "Crazy firerate", callback = Crazy_firerate },
     { text = "Fast weapon swap", callback = Fast_weapon_swap },
     { text = "Infinite ammo clip", callback = Infinite_ammo_clip },
-    { text = "Infinite saw", callback = Infinite_saw },
     { text = "Instant interaction", callback = Instant_interaction },
+    { text = "Ragdoll push effect with any weapon", callback = ragdoll_push_effect},
+    { text = "", is_cancel_button = true },
+    { text = "Infinite saw", callback = Infinite_saw },
     { text = "", is_cancel_button = true },
     { text = "Carry mod menu", callback = Carry_mod_menu },
     { text = "", is_cancel_button = true },
@@ -757,6 +878,7 @@ mymenu_inventory_items_options = {
     {text = 'Add muriatic acid', callback = add_muriaticAcid},
     {text = 'Add hydrogen chloride', callback = add_hydrogenChlorided},
     {text = 'Add caustic soda', callback = add_causticSoda},
+    {text = 'Use shaped charges', callback = Use_shaped_charges},
     { text = "", is_cancel_button = true },
     {text = 'Cooking combo', callback = add_cookingCombo},
     { text = "", is_cancel_button = true },
@@ -778,6 +900,11 @@ mymenu_stealth_options = {
     { text = "Stops civs from reporting you", callback = Stop_civs_report },
     { text = "Disable cam alarm", callback = Stop_cam_alarm },
     { text = "Prevent panic buttons & intel burning", callback = Stop_buttons_burning_intel },
+    { text = "Interact while in casing mode", callback = Interact_while_in_casing_mode },
+    { text = "Infinite hostage follower distance", callback = Infinite_hostage_follower_distance },
+    { text = "Infinite hostage followers", callback = Infinite_hostage_followers },
+    { text = "", is_cancel_button = true },
+    { text = "Twice as fast drilling times", callback = Twice_as_fast_drilling },
     { text = "", is_cancel_button = true },
     { text = "100% Stealth", callback = No_alarms },
     { text = "Demi stealth", callback = Demi_stealth },
@@ -829,7 +956,7 @@ mymenu_temp:hide()
 --In-Game check error
 
 elseif not managers.hud then
-_dialog_data = { 
+_dialog_data = {
 				title = "ERROR!",
 				text = "You need to be in game to use this menu!",
 				button_list = {{ text = "OK", is_cancel_button = true }},

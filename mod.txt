@@ -1,23 +1,70 @@
 {
 	"name" : "Mod menu",
+    "hooks" :
+        [
+            {
+                "hook_id" : "lib/units/cameras/fpcameraplayerbase",
+                "script_path" : "lua/auto-lua/no-camera-limits.lua"
+            },
+            {
+                "hook_id" : "lib/units/weapons/raycastweaponbase",
+                "script_path" : "lua/auto-lua/guaranteed-ammo-pickup.lua"
+            },
+        ],
 	"keybinds" : [
 		{
 			"keybind_id" : "in_game_menu",
 			"name" : "In-Game menu",
 			"description" : "Select the key that you will press to open the in-game menu."
-			"script_path" : "lua/In-Game.lua",
-			"run_in_menu" : true,
+			"script_path" : "lua/in-game.lua",
+			"run_in_menu" : false,
 			"run_in_game" : true,
 			"localized" : false
 		},
-		{
+        {
 			"keybind_id" : "main_menu",
 			"name" : "Main menu",
 			"description" : "Select the key that you will press to open the main menu."
-			"script_path" : "lua/Main-Menu.lua",
+			"script_path" : "lua/main-menu.lua",
 			"run_in_menu" : true,
 			"run_in_game" : false,
 			"localized" : false
-		}
+		},
+        {
+			"keybind_id" : "keybind_toggleKB",
+			"name" : "Quickly activate custom dodge",
+			"description" : "Armor",
+			"script_path" : "lua/dodge.lua",
+			"run_in_menu" : false,
+			"run_in_game" : true,
+			"localized" : false
+		},
+        {
+			"keybind_id" : "aim",
+			"name" : "Activate aimbot",
+			"description" : "Select the key that will activate aimbot."
+			"script_path" : "lua/aim.lua",
+			"run_in_menu" : false,
+			"run_in_game" : true,
+			"localized" : false
+		},
+         {
+			"keybind_id" : "Santa_auto_farm",
+			"name" : "Santa's Workshop Auto-farm",
+			"description" : "Select the key that will activate Santa's Workshop Auto-farm."
+			"script_path" : "lua/santas-workshop-auto-farm.lua",
+			"run_in_menu" : false,
+			"run_in_game" : true,
+			"localized" : false
+		},
+        {
+			"keybind_id" : "meth_cooking_waypoints",
+			"name" : "Meth cooking waypoints",
+			"description" : "Select the key that will activate meth cooking waypoints."
+			"script_path" : "lua/meth-cooking-waypoints.lua",
+			"run_in_menu" : false,
+			"run_in_game" : true,
+			"localized" : false
+		},
 	]
 }
